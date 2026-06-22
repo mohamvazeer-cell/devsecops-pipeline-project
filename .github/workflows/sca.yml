@@ -20,8 +20,33 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install pip-audit
         run: pip install pip-audit
 
-      - name: Run SCA scan
-        run: pip-audit -r requirements.txt
+      - name: Run Python dependency scan
+        run: pip-audit -r requirements.txt -f json -o pip-audit-report.json || true
+
+      - name: Run Node dependency audit
+        run: |
+          cd frontend
+          npm ci
+          npm audit --json > ../npm-audit-report.json || true
+
+      - name: Upload Python SCA report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pip-audit-report
+          path: pip-audit-report.json
+
+      - name: Upload Node SCA report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npm-audit-report
+          path: npm-audit-report.json
