@@ -21,3 +21,5 @@ jobs:
           target: 'https://devsecops-pipeline-project.onrender.com'
           cmd_options: '-a'
           allow_issue_writing: false
+          artifact_name: zap-scan-report
+          fail_action: false
